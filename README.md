@@ -67,3 +67,15 @@ GET /notification/:id response "content" attribute = "Hello, Bob. How are you to
 - Include a requirements.txt file
 
 - All routes should have associated unit tests written with Pytest
+
+
+
+
+
+
+
+
+
+
+## Requirements.txt
+- requirements.txt contains all the necessary dependencies needed to be installed per this project
