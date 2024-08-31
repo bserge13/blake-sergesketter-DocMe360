@@ -27,14 +27,6 @@ class Templates(Resource):
         templates = TemplateModel.query.all()
         return templates
 
-class Template(Resource):
-    @marshal_with(templateFields)
-    def get(self, id):
-        template = TemplateModel.query.filter_by(id=id).first()
-        if not template:
-            abort(404, message="Template not found")
-            return template
-
     @marshal_with(templateFields)
     def post(self):
         args = template_args.parse_args()
@@ -42,6 +34,14 @@ class Template(Resource):
         db.session.add(template)
         db.session.commit()
         return 201
+
+class Template(Resource):
+    @marshal_with(templateFields)
+    def get(self, id):
+        template = TemplateModel.query.filter_by(id=id).first()
+        if not template:
+            abort(404, message="Template not found")
+            return template
 
     def patch(self, id):
         args = template_args.parse_args()
@@ -57,9 +57,11 @@ class NotificationModel(db.Model):
 
 api.add_resource(Template, "/api/templates")
 # GET all templates
+api.add_resource(Template, "/api/templates/<int:id>")
+# POST new template
 api.add_resource(Template, "/api/template/<int:id>")
-# GET one template
-# PATCH update a template
+# GET specific template
+# PATCH update a specific template
 
 if __name__ == "__main__":
     app.run(debug=True)
