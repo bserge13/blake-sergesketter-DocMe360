@@ -12,7 +12,8 @@ class TemplateModel(db.Model):
     body = db.Column(db.String(100), nullable=False)
 
 template_args = reqparse.RequestParser()
-template_args.add_argument("body", type=str, required=True)
+template_args.add_argument("body", type=str, required=True, help="Body is required")
+# required=True and help= will error-handle no data being passed in for a bady and assist with a message 
 
 templateFields = {
     "id":fields.Integer,
@@ -54,7 +55,6 @@ class Template(Resource):
 
 # class NotificationModel(db.Model):
 #     ...
-
 
 api.add_resource(Template, "/api/template", "/api/template/<int:id>")
 # api.add_resource(Notification, "/api/notification", "/api/notification/<int:id>")
