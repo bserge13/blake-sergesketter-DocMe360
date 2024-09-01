@@ -2,33 +2,57 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api, reqparse, fields, marshal_with, abort
 
+# app, database, and api configuration/setup/connection
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy(app)
 api = Api(app)
 
+# Model(s) creation 
 class TemplateModel(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(100), nullable=False)
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.String(100), nullable = False)
 
 template_args = reqparse.RequestParser()
-template_args.add_argument("body", type=str, required=True, help="Body is required")
-# required=True and help= will error-handle no data being passed in for a bady and assist with a message 
+template_args.add_argument("body", type = str, required = True, help = "Body is required")
+# ^ required=True and help= will error-handle no data being passed in for a bady and assist with a message 
 
 templateFields = {
-    "id":fields.Integer,
-    "body":fields.String
+    "id": fields.Integer,
+    "body": fields.String
 }
 
+class NotificationModel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    phone_number = db.Column(db.String(20), nullable=False)
+    personalization = db.Column(db.String(100), nullable=True)
+    template_id = db.Column(db.Integer, db.ForeignKey("template_model.id"), nullable = False)
+    # ^ creating a foreign key constraint that links template_id in NotificationModel to the id field in TemplateModel
+    template = db.relationship("TemplateModel", backref = db.backref("notifications", lazy = True))
+    # ^ seting up a relationship between the NotificationModel and TemplateModel allowing access to the related TemplateModel 
+    # from a NotificationModel instance, using notification.template
+notification_args = reqparse.RequestParser()
+notification_args.add_argument("phone_number", type = str, required = True, help = "Phone Number is reuired")
+notification_args.add_argument("personalization", type = str, required = False)
+notification_args.add_argument("template_id", type = int, required = True, help = "Template ID is required")
+
+notificationFields = {
+    "id": fields.Integer,
+    "phone_number": fields.String,
+    "personalization": fields.String,
+    "template_id": fields.Integer
+}
+
+# Model(s) class-functions
 class Template(Resource):
     @marshal_with(templateFields)
-    def get(self, id=None):
+    def get(self, id = None):
         if id is None:
-        # if no id is passed in the request, return all templates
+        # ^ no id is passed in the request, return all templates
             templates = TemplateModel.query.all()
             return templates
         else:
-        # an id is passed in the request; search for it and handle accordingly
+        # ^ an id is passed in the request, we search for it and handle accordingly from that point
             template = TemplateModel.query.filter_by(id=id).first()
             if not template:
                 abort(404, message="Template not found")
@@ -37,7 +61,7 @@ class Template(Resource):
     @marshal_with(templateFields)
     def post(self):
         args = template_args.parse_args()
-        template = TemplateModel(body=args["body"])
+        template = TemplateModel(body = args["body"])
         db.session.add(template)
         db.session.commit()
         return template, 201
@@ -46,19 +70,41 @@ class Template(Resource):
     def patch(self, id):
         template = TemplateModel.query.filter_by(id=id).first()
         if not template:
-            abort(404, message="Template not found")
+            abort(404, message = "Template not found")
         args = template_args.parse_args()
         template.body = args["body"]
         db.session.commit()
         return template
 
+class Notification(Resource):
+    @marshal_with(notificationFields)
+    def get(self, id = None):
+        if id is None:
+            notifications = NotificationModel.query.all()
+            return notifications
+        else:
+            notification = NotificationModel.query.filter_by(id=id).first()
+            if not notification:
+                abort(404, message = "Notification not found")
+            return notification
 
-# class NotificationModel(db.Model):
-#     ...
+    @marshal_with(notificationFields)
+    def post(self):
+        args = notification_args.parse_args()
+        notification = NotificationModel(
+            phone_number = args["phone_number"],
+            personalization = args["personalization"],
+            template_id = args["template_id"]
+            )
+        db.session.add(notification)
+        db.session.commit()
+        return notification, 201
 
+# Resources/routes for api consumption
 api.add_resource(Template, "/api/template", "/api/template/<int:id>")
-# api.add_resource(Notification, "/api/notification", "/api/notification/<int:id>")
+api.add_resource(Notification, "/api/notification", "/api/notification/<int:id>")
 
+# Runs the app upon calling api.py 
 if __name__ == "__main__":
     app.run(debug=True)
 # in development we're good to set debug to True, but production we'd want False
