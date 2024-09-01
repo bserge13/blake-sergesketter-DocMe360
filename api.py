@@ -57,13 +57,9 @@ class Template(Resource):
 # class NotificationModel(db.Model):
 #     ...
 
-# api.add_resource(Notification, "/api/notification", "/api/notification/<int:id>")
 
 api.add_resource(Template, "/api/template", "/api/template/<int:id>")
-# GET all templates
-# GET specific template
-# POST new template
-# PATCH update a specific template
+# api.add_resource(Notification, "/api/notification", "/api/notification/<int:id>")
 
 if __name__ == "__main__":
     app.run(debug=True)
