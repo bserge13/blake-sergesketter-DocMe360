@@ -31,6 +31,7 @@ class NotificationModel(db.Model):
     template = db.relationship("TemplateModel", backref = db.backref("notifications", lazy = True))
     # ^ seting up a relationship between the NotificationModel and TemplateModel allowing access to the related TemplateModel 
     # from a NotificationModel instance, using notification.template
+
 notification_args = reqparse.RequestParser()
 notification_args.add_argument("phone_number", type = str, required = True, help = "Phone Number is reuired")
 notification_args.add_argument("personalization", type = str, required = False)
@@ -53,7 +54,7 @@ class Template(Resource):
             return templates
         else:
         # ^ an id is passed in the request, we search for it and handle accordingly from that point
-            template = TemplateModel.query.filter_by(id=id).first()
+            template = TemplateModel.query.filter_by(id = id).first()
             if not template:
                 abort(404, message="Template not found")
             return template
@@ -68,13 +69,21 @@ class Template(Resource):
 
     @marshal_with(templateFields)
     def patch(self, id):
-        template = TemplateModel.query.filter_by(id=id).first()
+        template = TemplateModel.query.filter_by(id = id).first()
         if not template:
             abort(404, message = "Template not found")
         args = template_args.parse_args()
         template.body = args["body"]
         db.session.commit()
         return template
+
+    @marshal_with(templateFields)
+    def delete(self, id):
+        template = TemplateModel.query.filter_by(id = id).first()
+        if not template:
+            abort(404, message = "Template not found")
+        db.session.delete(template)
+        db.session.commit()
 
 class Notification(Resource):
     @marshal_with(notificationFields)
@@ -86,7 +95,19 @@ class Notification(Resource):
             notification = NotificationModel.query.filter_by(id=id).first()
             if not notification:
                 abort(404, message = "Notification not found")
-            return notification
+
+            template = notification.template
+            if not template:
+                abort(404, message = "Template not found")
+
+            content = template.body.replace("(personal)", notification.personalization or "")
+            return {
+                "id": notification.id,
+                "phone_number": notification.phone_number,
+                "personalization": notification.personalization,
+                "template_id": notification.template_id,
+                "content": content,
+            }
 
     @marshal_with(notificationFields)
     def post(self):
