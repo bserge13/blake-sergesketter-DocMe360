@@ -4,9 +4,7 @@ from flask_restful import Resource, Api, reqparse, fields, marshal_with, abort
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-# configure our database
 db = SQLAlchemy(app)
-# Flask utilizes sqlite3 with the use of SQLAlchemy
 api = Api(app)
 
 class TemplateModel(db.Model):
