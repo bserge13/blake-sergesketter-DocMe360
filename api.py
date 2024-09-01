@@ -21,46 +21,48 @@ templateFields = {
     "body":fields.String
 }
 
-class Templates(Resource):
+class Template(Resource):
     @marshal_with(templateFields)
-    def get(self):
-        templates = TemplateModel.query.all()
-        return templates
+    def get(self, id=None):
+        if id is None:
+        # if no id is passed in the request, return all templates
+            templates = TemplateModel.query.all()
+            return templates
+        else:
+        # an id is passed in the request; search for it and handle accordingly
+            template = TemplateModel.query.filter_by(id=id).first()
+            if not template:
+                abort(404, message="Template not found")
+            return template
 
     @marshal_with(templateFields)
     def post(self):
         args = template_args.parse_args()
-        template = TemplateModel(args["body"])
+        template = TemplateModel(body=args["body"])
         db.session.add(template)
         db.session.commit()
-        return 201
+        return template, 201
 
-class Template(Resource):
     @marshal_with(templateFields)
-    def get(self, id):
+    def patch(self, id):
         template = TemplateModel.query.filter_by(id=id).first()
         if not template:
             abort(404, message="Template not found")
-            return template
-
-    def patch(self, id):
         args = template_args.parse_args()
-        template = TemplateModel.query.filter_by(id=id).first()
+        template.body = args["body"]
+        db.session.commit()
+        return template
 
 
+# class NotificationModel(db.Model):
+#     ...
 
-class NotificationModel(db.Model):
-    ...
+# api.add_resource(Notification, "/api/notification", "/api/notification/<int:id>")
 
-# api.add_resource(Notification, "/api/notification")
-# api.add_resource(Notification, "/api/notification/<int:id>")
-
-api.add_resource(Template, "/api/templates")
+api.add_resource(Template, "/api/template", "/api/template/<int:id>")
 # GET all templates
-api.add_resource(Template, "/api/templates/<int:id>")
-# POST new template
-api.add_resource(Template, "/api/template/<int:id>")
 # GET specific template
+# POST new template
 # PATCH update a specific template
 
 if __name__ == "__main__":
