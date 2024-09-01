@@ -13,22 +13,39 @@ class TemplateModel(db.Model):
 
 template_args = reqparse.RequestParser()
 template_args.add_argument("body", type=str, required=True, help="Body is required")
-# required=True and help= will error-handle no data being passed in for a bady and assist with a message 
+# ^ required=True and help= will error-handle no data being passed in for a bady and assist with a message 
 
 templateFields = {
     "id":fields.Integer,
     "body":fields.String
 }
 
+class NotificationModel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    phone_number = db.Column(db.String(20), nullable=False)
+    personalization = db.Column(db.String(100), nullable=True)
+    template_id = db.Column(db.Integer, db.ForeignKey("template_model.id"), nullable=False)
+    # ^ creating a foreign key constraint that links template_id in NotificationModel to the id field in TemplateModel
+    template = db.relationship("TemplateModel", backref=db.backref("notifications", lazy=True))
+    # ^ seting up a relationship between the NotificationModel and TemplateModel allowing access to the related TemplateModel 
+    # from a NotificationModel instance, using notification.template
+
+notificationFields = {
+    "id":fields.Integer,
+    "phone_number":fields.String,
+    "personalization":fields.String,
+    "template_id":fields.Integer
+}
+
 class Template(Resource):
     @marshal_with(templateFields)
     def get(self, id=None):
         if id is None:
-        # if no id is passed in the request, return all templates
+        # ^ no id is passed in the request, return all templates
             templates = TemplateModel.query.all()
             return templates
         else:
-        # an id is passed in the request; search for it and handle accordingly
+        # ^ an id is passed in the request, we search for it and handle accordingly from that point
             template = TemplateModel.query.filter_by(id=id).first()
             if not template:
                 abort(404, message="Template not found")
