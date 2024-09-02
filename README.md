@@ -28,7 +28,8 @@ Set reasonable values for maximum string lengths. All fields are not null unless
 
 ## Endpoints
 
-Please implement the following endpoints. All endpoints should return JSON and set the _Content-Type_ response header appropriately. The response body should be the affected record(s).
+REQ: Please implement the following endpoints. All endpoints should return JSON and set the _Content-Type_ response header appropriately. The response body should be the affected record(s).
+ANSWER: It is implicitly handled by Flask_restful automatically setting the '_Content-Type_' to 'application/json' when returning via the 'marshal_with' decorator
 
 | Endpoint | Expected Status Code | Expected Behavior |
 
