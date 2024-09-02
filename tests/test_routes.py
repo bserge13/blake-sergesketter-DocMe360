@@ -1,7 +1,7 @@
 import pytest 
 from flask import json
 
-# Template routes
+# Template endpoints
 def test_get_template(client):
     response = client.post("/api/template", json = {"body": "Test Template"})
     template_id = response.get_json()["id"]
@@ -56,9 +56,7 @@ def test_delete_template (client):
     assert response.status_code == 200
     assert deleted.status_code == 404
 
-
-
-# Notification routes
+# Notification endpoints
 def test_get_notification(client):
     template = client.post("/api/template", json = {"body": "Test Template"})
     template_id = template.get_json()["id"]
