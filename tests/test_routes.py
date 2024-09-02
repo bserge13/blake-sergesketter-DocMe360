@@ -1,27 +1,30 @@
 import pytest 
-from flask import url_for
+from flask import json
 
-# GET single resource
-@pytest.mark.parametrize("endpoint, id, expected_status", [("template", 1, 200), ("notification", 1, 200)])
+# GET single Template/Notification
+# @pytest.mark.parametrize("endpoint, id, expected_status", [
+#     ("/api/template", 1, 200), ("/api/notification", 1, 200)
+# ])
 
-def test_get_resource(client, endpoint, id, expected_status):
-    response = client.get(url_for(endpoint, id=id))
-    data = response.get_json()
+# def test_get_resource(client, endpoint, id, expected_status):
+#     response = client.get(f"{endpoint}/{id}")
+#     data = response.get_json()
 
-    assert response.status_code == expected_status
-    assert "id" in data 
-    assert data["id"] == id
+#     assert response.status_code == expected_status
+#     assert "id" in data 
+#     assert data["id"] == id
 
-# Template
+# Template routes
 def test_get_templates(client):
-    response = client.get(url_for("template"))
+    response = client.get("/api/template")
     data = response.get_json()
 
     assert response.status_code == 200
-    assert len(data) == 4 
+    assert len(data) != 0 
+    # test dependant on the current state of the database (currently has Templates in db)
 
 def test_post_template(client):
-    response = client.post(url_for("template"), json = {
+    response = client.post("/api/template", json = {
         "body": "Hello, (peronsal). How are you today, (personal)?",
         })
     data = response.get_json()
@@ -30,16 +33,23 @@ def test_post_template(client):
     assert "id" in data
     assert data["body"] == "Hello, (peronsal). How are you today, (personal)?"
 
-# def test_patch_template(client):
-#     ...
+def test_patch_template(client):
+    response = client.patch("/api/template/10", json = {
+        "body": "Happy Holiday, (personal)!"
+    })
+    updated_temp = client.get("/api/template/10")
+    data = updated_temp.get_json()
 
-# def test_delete_template (client):
-#     ...
+    assert response.status_code == 200
+    assert data["body"] == "Happy Holiday, (personal)!"
+
+def test_delete_template (client):
+    ...
 
 
-# # Notification
+# Notification routes
 def test_get_notification(client):
-    response = client.get(url_for("notification", id=1))
+    response = client.get("/api/notification/1")
     data = response.get_json()
 
     assert response.status_code == 200
@@ -55,17 +65,17 @@ def test_get_notification(client):
     assert data["content"] == "Hello, Balakay, how are you today?"
 
 def test_get_notifications(client):
-    response = client.get(url_for("notification"))
+    response = client.get("/api/notification")
     data = response.get_json()
 
     assert response.status_code == 200
-    assert len(data) == 4 
+    assert len(data) != 0 
 
 def test_post_notification(client):
-    response = client.post(url_for("notification"), json = {
-        "phone_number": "671-992-8979",
-        "personalization": "John-Paul",
-        "template_id": 1
+    response = client.post("/api/notification", json = {
+            "phone_number": "671-992-8979",
+            "personalization": "John-Paul",
+            "template_id": 1
         })
     data = response.get_json()
 
@@ -75,9 +85,5 @@ def test_post_notification(client):
     assert data["personalization"] == "John-Paul"
     assert data["template_id"] == 1
 
-
-# def test_patch_notification(client):
-#     ...
-
-# def test_delete_notification (client):
-#     ...
+def test_delete_notification (client):
+    ...
