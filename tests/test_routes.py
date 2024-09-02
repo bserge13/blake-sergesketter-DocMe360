@@ -1,20 +1,17 @@
 import pytest 
 from flask import json
 
-# GET single Template/Notification
-# @pytest.mark.parametrize("endpoint, id, expected_status", [
-#     ("/api/template", 1, 200), ("/api/notification", 1, 200)
-# ])
-
-# def test_get_resource(client, endpoint, id, expected_status):
-#     response = client.get(f"{endpoint}/{id}")
-#     data = response.get_json()
-
-#     assert response.status_code == expected_status
-#     assert "id" in data 
-#     assert data["id"] == id
-
 # Template routes
+def test_get_template(client):
+    response = client.get("/api/template/1")
+    data = response.get_json()
+
+    assert response.status_code == 200
+    assert "id" in data 
+    assert data["id"] == 1
+    assert "body" in data 
+    assert data["body"] == "Hello, (personal), how are you today?"
+
 def test_get_templates(client):
     response = client.get("/api/template")
     data = response.get_json()
@@ -44,7 +41,12 @@ def test_patch_template(client):
     assert data["body"] == "Happy Holiday, (personal)!"
 
 def test_delete_template (client):
-    ...
+    response = client.delete("/api/template/12")
+    deleted = client.get("/api/template/12")
+
+    assert response.status_code == 200
+    assert deleted.status_code == 404
+
 
 
 # Notification routes
@@ -86,4 +88,8 @@ def test_post_notification(client):
     assert data["template_id"] == 1
 
 def test_delete_notification (client):
-    ...
+    response = client.delete("/api/notification/12")
+    deleted = client.get("/api/notification/12")
+
+    assert response.status_code == 200
+    assert deleted.status_code == 404
