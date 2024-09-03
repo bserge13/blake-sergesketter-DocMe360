@@ -4,6 +4,32 @@
 This API works to provide CRUD functionality between the relational tables of message TEMPLATES and personalized NOTIFICATIONS
 
 
+## Getting Started
+This project leverages the ease and simplicity of Flask as its framework, and the dynamic ability of Python as it's programming language
+(NOTE: this is not a deployed project which means it will only be accessible via a localhost server)
+
+First you will want to insure you have Python installed locally on your personal machine. If you need any guidance you can click [here](https://www.python.org/downloads/) for support
+
+Next, upon openning the project we'll want to install the neccessary dependencies in the requirements.txt file by running the command pip install -r requirements.txt
+
+Once requirements are installed, to test the endpoints you can use the VS Code extension, Thunder Client, to see and test the functionality of the endpoints
+
+### Running the Test Suite
+
+To run the test suite, execute the following command:
+
+`python create_db.py` 
+`python -m pytest tests`
+
+All tests should be passing (9/9)
+
+### Running the Server
+
+To run the server, execute the following command:
+
+`python api.py`
+
+
 ## Models
 - Template 
 - Notification
@@ -26,48 +52,61 @@ A Notification will have fields for ID, Phone number, Personalization, and Templ
 
 - personalization: string, nullable
 
-NOTE: A request of GET /api/notification/{id} will return a Notification with a special field, CONTENT, that has the value of it's parent association (Template.body) and interpolating-in the place of "(personal)" it's own value (Notification.personalization) 
+NOTE: A request of GET /api/notification/{id} will return a Notification with a special field, CONTENT, which is the value of it's associated Template (Template.body) interpolated the place of "(personal)" from it's own value (Notification.personalization) 
+
+EXAMPLE: 
+- Notification "personalization" = "Blake"
+- Template "body" = "Good morning, (peronsal). Ready for your apointment today, (personal)?"
+- GET /notification/:id response "content" attribute = "Good morning, Blake. Ready for your apointment today, Blake?"
+
+
+## Database
+This API leverages a SQLite relational database, and a couple different libraries (see Requirements), to utilize the conerting and querying ability of an ORM (Object-Relational Mapper) to lean into object-oriented programming   
+
 
 ## Endpoints
 
-REQ: Please implement the following endpoints. All endpoints should return JSON and set the _Content-Type_ response header appropriately. The response body should be the affected record(s).
-ANSWER: It is implicitly handled by Flask_restful automatically setting the '_Content-Type_' to 'application/json' when returning via the 'marshal_with' decorator
-
 ### - Notification
-| GET /notification | 200 | Return a list of Notifications |
+GET /notification 
+Status Code: 200 
+Returns a list of Notifications 
 
-| GET /notification/:id | 200 | Return a given Notification. Includes "content" field (below). |
+GET /notification/:id 
+Status Code: 200 
+Returns a given Notification, and includes the "content" field (see Notification Model)
 
-| POST /notification | 201 | Create a new Notification |
+POST /notification 
+Status Code: 201 
+Creates a new Notification 
+
+DELETE /notificatin/:id
+Status Code: 200
+Deletes a given Notification
+
 ### - Template
-| GET /template | 200 | Return a list of Templates |
+GET /template
+Status Code: 200 
+Returns a list of Templates
 
-| GET /template/:id | 200 | Return a given Template |
+GET /template/:id
+Status Code: 200 
+Returns a given Template
 
-| POST /template | 201 | Create a new Template |
+POST /template 
+Status Code: 201 
+Creates a new Template |
 
-| PATCH /template/:id | 200 | Update a given template. Select the HTTP method appropriately. |
+PATCH /template/:id 
+Status Code: 200 
+Updates a given Template
 
-
-HTTP response JSON for the endpoint `GET /notification/:id`, and only this endpoint, should include the additional string field "content" that has the value of Template.body where all instances in Template.body of the string "(personal)" are replaced by the value of Notification.personalization.
-
-Example:
-
-Notification "personalization" = "Bob"
-
-Template "body" = "Hello, (peronsal). How are you today, (personal)?"
-
-GET /notification/:id response "content" attribute = "Hello, Bob. How are you today, Bob?"
-
-## Additional Requirements
-
-- Include a README that describes how to run your application, any design decisions worth discussing, and any assumptions you made.
-
-- Include a requirements.txt file
-
-- All routes should have associated unit tests written with Pytest
+DELETE /template/:id
+Status Code: 200
+Deletes a given Template
 
 
+## NOTE: 
+At this time app.run() in 'api.py' sets debug equal to FALSE for a production-ready environment. While there is a security risk to setting debug=True, here are a couple benefits to setting True for Development:
 
-## Requirements.txt
-- requirements.txt contains all the necessary dependencies needed to be installed per this project
+- Error display, detailed error-message outputs
+- Autmatic code reloading, no need for restarting server 

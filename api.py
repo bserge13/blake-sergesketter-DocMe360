@@ -139,5 +139,7 @@ api.add_resource(Notification, "/api/notification", "/api/notification/<int:id>"
 
 # Spins up the app upon calling api.py 
 if __name__ == "__main__":
-    app.run(debug=True)
-# in development we're good to set debug to True, but production we'd want False
+    # app.run(debug=True)
+# for development 
+    app.run(debug=False)
+# for production 
