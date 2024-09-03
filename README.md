@@ -10,7 +10,7 @@ This project leverages the ease and simplicity of Flask as its framework, and th
 
 First you will want to insure you have Python installed locally on your personal machine. If you need any guidance you can click [here](https://www.python.org/downloads/) for support
 
-Next, upon openning the project we'll want to install the neccessary dependencies in the requirements.txt file by running the command pip install -r requirements.txt
+Next, upon opening the project we'll want to install the necessary dependencies in the requirements.txt file by running the command pip install -r requirements.txt
 
 Once requirements are installed, to test the endpoints you can use the VS Code extension, Thunder Client, to see and test the functionality of the endpoints
 
@@ -56,12 +56,12 @@ NOTE: A request of GET /api/notification/{id} will return a Notification with a 
 
 EXAMPLE: 
 - Notification "personalization" = "Blake"
-- Template "body" = "Good morning, (peronsal). Ready for your apointment today, (personal)?"
-- GET /notification/:id response "content" attribute = "Good morning, Blake. Ready for your apointment today, Blake?"
+- Template "body" = "Good morning, (personal). Ready for your appointment today, (personal)?"
+- GET /notification/:id response "content" attribute = "Good morning, Blake. Ready for your appointment today, Blake?"
 
 
 ## Database
-This API leverages a SQLite relational database, and a couple different libraries (see Requirements), to utilize the conerting and querying ability of an ORM (Object-Relational Mapper) to lean into object-oriented programming   
+This API leverages a SQLite relational database, and a couple different libraries (see Requirements), to utilize the ease of built-in querying methods of an ORM (Object-Relational Mapper) to lean into object-oriented programming   
 
 
 ## Endpoints
@@ -79,7 +79,7 @@ POST /notification
 Status Code: 201 
 Creates a new Notification 
 
-DELETE /notificatin/:id
+DELETE /notification/:id
 Status Code: 200
 Deletes a given Notification
 
@@ -109,4 +109,4 @@ Deletes a given Template
 At this time app.run() in 'api.py' sets debug equal to FALSE for a production-ready environment. While there is a security risk to setting debug=True, here are a couple benefits to setting True for Development:
 
 - Error display, detailed error-message outputs
-- Autmatic code reloading, no need for restarting server 
+- Automatic code reloading, no need for restarting server 
