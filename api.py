@@ -8,7 +8,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 db = SQLAlchemy(app)
 api = Api(app)
 
-# Model(s) creation 
+# Tables 
 class TemplateModel(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     body = db.Column(db.String(100), nullable = False)
@@ -44,7 +44,7 @@ notificationFields = {
     "template_id": fields.Integer
 }
 
-# Model(s) class-functions
+# Class-functions
 class Template(Resource):
     @marshal_with(templateFields)
     def get(self, id = None):
@@ -137,9 +137,6 @@ class Notification(Resource):
 api.add_resource(Template, "/api/template", "/api/template/<int:id>")
 api.add_resource(Notification, "/api/notification", "/api/notification/<int:id>")
 
-# Spins up the app upon calling api.py 
 if __name__ == "__main__":
-    # app.run(debug=True)
-# for development 
     app.run(debug=False)
-# for production 
+# for production = False, Development = True
