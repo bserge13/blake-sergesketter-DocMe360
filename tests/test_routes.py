@@ -46,7 +46,7 @@ def test_patch_template(client):
     assert response.status_code == 200
     assert data["body"] == "Updated Test Template"
 
-def test_delete_template (client):
+def test_delete_template(client):
     response = client.post("/api/template", json = {"body": "Delete Template"})
     template_id = response.get_json()["id"]
 
