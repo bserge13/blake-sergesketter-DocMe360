@@ -1,5 +1,6 @@
 import pytest 
 from flask import json
+import urls, models, api
 
 # Template endpoints
 def test_get_template(client):
